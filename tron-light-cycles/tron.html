@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+
+<html lang="en-US">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tron</title>
+  <script src="../../jsgame0.js"></script>
+  <style type="text/css" media="screen">
+body {
+  background-color: white;
+  color: black;
+}
+.hidden {
+  display: none;
+}
+#original {
+  margin-left: 1em;
+}
+  </style>
+</head>
+
+<body>
+<section id="imageLoader" class="hidden">
+  <img class="hidden" src="images/background.png" alt="background" data-name="background">
+  <img class="hidden" src="images/bike0.png" alt="bike0" data-name="bike0">
+  <img class="hidden" src="images/bike1.png" alt="bike1" data-name="bike1">
+  <img class="hidden" src="images/bike2.png" alt="bike2" data-name="bike2">
+  <img class="hidden" src="images/bike3.png" alt="bike3" data-name="bike3">
+  <img class="hidden" src="images/bike4.png" alt="bike4" data-name="bike4">
+  <img class="hidden" src="images/bike5.png" alt="bike5" data-name="bike5">
+  <img class="hidden" src="images/bike6.png" alt="bike6" data-name="bike6">
+  <img class="hidden" src="images/bike7.png" alt="bike7" data-name="bike7">
+  <img class="hidden" src="images/bike8.png" alt="bike8" data-name="bike8">
+  <img class="hidden" src="images/dot.png" alt="dot" data-name="dot">
+</section>
+
+<main>
+<h1>tron</h1>
+
+<canvas id="screen">
+The game screen appears here if your browser supports the Canvas API.
+</canvas>
+<section id="controls">
+  <button type="button" id="reset">Reset</button>
+  <button type="button" id="pause">Pause</button>
+</section>
+
+<h2>Attribution</h2>
+
+<p><a href="https://wireframe.raspberrypi.org/issues/47">Code your own Tron Light Cycle mini-game, pages 66 and 67, by Mark Vanstone</a>.</p>
+
+<p>Licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/legalcode">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported</a>.</p>
+
+<h2>Original Python code</h2>
+
+<pre id="original"><code>
+# Tron
+import pgzrun
+
+speed = 3
+dirs = [0,90,180,270]
+moves = [(0,-1),(-1,0),(0,1),(1,0)]
+
+def draw():
+    screen.blit(&quot;background&quot;, (0, 0))
+    for x in range(0, 79):
+        for y in range(0, 59):
+            if matrix[x][y] &gt; 0:
+                matrix[x][y] += 1
+                screen.blit(&quot;dot&quot;,((x*10)-5,(y*10)-5))
+    bike.draw()
+    screen.draw.text(&quot;SCORE : &quot;+ str(score), center=(400, 588), owidth=0.5, ocolor=(0,255,255), color=(0,0,255) , fontsize=28)
+
+def update():
+    global matrix,gamestate,score
+    if gamestate == 0:
+        bike.angle = dirs[bike.direction]
+        bike.x += moves[bike.direction][0]*speed
+        bike.y += moves[bike.direction][1]*speed
+        score += 10
+        if matrix[int(bike.x/10)][int(bike.y/10)] &lt; 15 :
+            matrix[int(bike.x/10)][int(bike.y/10)] += 1
+        else:
+            gamestate = 1
+        if bike.x &lt; 60 or bike.x &gt; 750 or bike.y &lt; 110 or bike.y &gt; 525:
+            gamestate = 1
+    else:
+        if gamestate &lt; 18:
+            bike.image = &quot;bike&quot;+str(int(gamestate/2))
+            bike.angle = dirs[bike.direction]
+            gamestate += 1
+
+def on_key_down(key):
+    if key == keys.LEFT:
+        bike.direction += 1
+        snapBike()
+        if bike.direction == 4 : bike.direction = 0
+    if key == keys.RIGHT:
+        bike.direction -= 1
+        snapBike()
+        if bike.direction == -1 : bike.direction = 3
+    if key == keys.SPACE and gamestate == 18:
+        init()
+
+def snapBike():
+    bike.x = int(bike.x/10)*10
+    bike.y = int(bike.y/10)*10
+
+def init():
+    global bike,matrix,gamestate,score
+    bike = Actor(&#x27;bike1&#x27;, center=(400, 500))
+    bike.direction = 0
+    matrix = [[0 for y in range(60)] for x in range(80)]
+    gamestate = score = 0
+
+init()
+
+pgzrun.go()
+</code></pre>
+</main>
+
+<script>
+// Tron
+const SPEED = 3;
+const DIRS = [0, 90, 180, 270];
+const MOVES = [[0, -1], [-1, 0], [0, 1], [1, 0]];
+
+var bike, matrix, gamestate, score;
+
+function reset() {
+  bike = new Actor('bike1');
+  bike.center = [400, 500];
+  bike.direction = 0;
+
+  matrix = [];
+  for (let x = 0; x < 80; x++) {
+    matrix.push((new Array(60)).fill(0));
+  }
+
+  gamestate = 0;
+  score = 0;
+}
+
+function draw() {
+  screen.blit("background", [0, 0]);
+  for (let x = 0; x < 79; x++) {
+    for (let y = 0; y < 59; y++) {
+      if (matrix[x][y] > 0) {
+        matrix[x][y] += 1;
+        screen.blit("dot", [(x * 10) - 5, (y * 10) - 5]);
+      }
+    }
+  }
+  bike.draw();
+  screen.draw.text("SCORE : " + score, {
+    center: [400, 588],
+    owidth: 0.5,
+    ocolor: [0, 255, 255],
+    color: [0, 0, 255],
+    fontsize: 28
+  });
+}
+
+function update() {
+  if (gamestate === 0) {
+    bike.angle = DIRS[bike.direction];
+    bike.posx += MOVES[bike.direction][0] * SPEED;
+    bike.posy += MOVES[bike.direction][1] * SPEED;
+    score += 10;
+    if (matrix[Math.trunc(bike.posx / 10)][Math.trunc(bike.posy / 10)] < 15) {
+      matrix[Math.trunc(bike.posx / 10)][Math.trunc(bike.posy / 10)] += 1;
+    }
+    else {
+      gamestate = 1;
+    }
+    if ((bike.posx < 60) || (bike.posx > 750) || (bike.posy < 110) || (bike.posy > 525)) {
+      gamestate = 1;
+    }
+  }
+  else {
+    if (gamestate < 18) {
+      bike.name = "bike" + Math.trunc(gamestate / 2);
+      bike.angle = DIRS[bike.direction];
+      gamestate += 1;
+    }
+  }
+}
+
+function on_key_down(key) {
+  if (key === keys.LEFT) {
+    bike.direction += 1;
+    snapBike();
+    if (bike.direction === 4) {
+      bike.direction = 0;
+    }
+  }
+  if (key === keys.RIGHT) {
+    bike.direction -= 1;
+    snapBike();
+    if (bike.direction === -1) {
+      bike.direction = 3;
+    }
+  }
+  if ((key === keys.SPACE) && (gamestate === 18)) {
+    reset();
+  }
+}
+
+function snapBike() {
+  bike.posx = Math.trunc(bike.posx / 10) * 10;
+  bike.posy = Math.trunc(bike.posy / 10) * 10;
+}
+
+window.addEventListener('load', (event) => {
+  images.LOAD('#imageLoader img');
+  reset();
+  screen.set_mode('#screen', '#reset', '#pause');
+});
+</script>
+</body>
+
+</html>
